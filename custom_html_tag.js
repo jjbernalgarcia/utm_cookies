@@ -1,28 +1,38 @@
 <script>
 (function(){
   // Function to set cookie
-  function setCookie(cookieName, cookieValue, expirationTimeInDays) {
-    var expirationTime = expirationTimeInDays * 24 * 60 * 60 * 1000; // Converts expiration time from days to milliseconds (1 day = 24 hours * 60 minutes * 60 seconds * 1000 milliseconds)
-    var date = new Date(); 
-    date.setTime(date.getTime() + expirationTime); // Sets expiration time (Time now + expiration time)
-    var dateString = date.toUTCString(); // Converts milliseconds to UTC time string
-
+  function setCookie(cookieName, cookieValue) {
     // Get the root domain
     var hostname = location.hostname;
     var domainParts = hostname.split('.').reverse();
     var rootDomain = domainParts[1] + '.' + domainParts[0]; // Assumes at least a two-part domain like 'example.com'
 
-    // Sets cookie for the root domain
-    document.cookie = cookieName + "=" + cookieValue + "; SameSite=None; Secure; expires=" + dateString + "; path=/; domain=." + rootDomain;
+    // Sets cookie for the root domain without expiration (session cookie)
+    document.cookie = cookieName + "=" + cookieValue + "; SameSite=None; Secure; path=/; domain=." + rootDomain;
   }
 
-  // Set your cookies here, the third parameter is now 7 days for all cookies
-  setCookie("utm_source_cookie", "{{url - query utm_source}}", 7); // 7 days
-  setCookie("utm_campaign_cookie", "{{url - query utm_campaign}}", 7); // 7 days
-  setCookie("utm_medium_cookie", "{{url - query utm_medium}}", 7); // 7 days
-  setCookie("utm_content_cookie", "{{url - query utm_content}}", 7); // 7 days
-  setCookie("utm_term_cookie", "{{url - query utm_term}}", 7); // 7 days
-  
-  // Add more cookies as needed...
+  // Function to get URL parameter value
+  function getUrlParameter(name) {
+    name = name.replace(/[\[]/, '\\[').replace(/[\]]/, '\\]');
+    var regex = new RegExp('[\\?&]' + name + '=([^&#]*)');
+    var results = regex.exec(location.search);
+    return results === null ? '' : decodeURIComponent(results[1].replace(/\+/g, ' '));
+  }
+
+  // Check for UTM parameters
+  var utm_source = getUrlParameter('utm_source');
+  var utm_campaign = getUrlParameter('utm_campaign');
+  var utm_medium = getUrlParameter('utm_medium');
+  var utm_content = getUrlParameter('utm_content');
+  var utm_term = getUrlParameter('utm_term');
+
+  // Set cookies if at least one UTM parameter is present
+  if (utm_source || utm_campaign || utm_medium || utm_content || utm_term) {
+    if (utm_source) setCookie("utm_source", utm_source);
+    if (utm_campaign) setCookie("utm_campaign", utm_campaign);
+    if (utm_medium) setCookie("utm_medium", utm_medium);
+    if (utm_content) setCookie("utm_content", utm_content);
+    if (utm_term) setCookie("utm_term", utm_term);
+  }
 })();
 </script>
