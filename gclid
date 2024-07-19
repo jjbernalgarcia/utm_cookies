@@ -1,0 +1,25 @@
+<script>
+  (function() {
+    // Function to get URL parameter
+    function getUrlParameter(name) {
+      name = name.replace(/[\[]/, '\\[').replace(/[\]]/, '\\]');
+      var regex = new RegExp('[\\?&]' + name + '=([^&#]*)');
+      var results = regex.exec(location.search);
+      return results === null ? '' : decodeURIComponent(results[1].replace(/\+/g, ' '));
+    }
+
+    // Function to set a session cookie available across all subdomains
+    function setSessionCookie(name, value) {
+      var domain = window.location.hostname.split('.').slice(-2).join('.');
+      document.cookie = name + "=" + value + ";path=/;domain=." + domain + ";SameSite=Strict";
+    }
+
+    // Get the 'gclid' parameter from the URL
+    var gclid = getUrlParameter('gclid');
+
+    // If 'gclid' exists, store it in a session cookie
+    if (gclid) {
+      setSessionCookie('gclid', gclid);
+    }
+  })();
+</script>
